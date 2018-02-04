@@ -1,0 +1,256 @@
+#第一个模型，一元线性回归模型
+'''
+    1. 获得帮助的方法：
+    from sklearn import linear_model
+    help(linear_model.LinearRegression.fit)，啦啦啦，竟然变成斜体了
+    注意此处的fit不需要带括号的，否则就当成函数调用了
+    2.python有相当于R中的summary()函数，只不过得导入pandas库
+    只能再pandas库中使用
+    eg:import pandas as pd
+       data=pd.read_csv('Notebooks\\Data\\Auto.csv')
+       summary=data.describe()
+       print(summary)
+'''
+from sklearn import linear_model
+import matplotlib.pyplot as plt
+from itertools import islice#导入切片操作
+import numpy as np
+file=open('C:\\Users\\XiaokangYu\\Desktop\\DataSet\\Datasets\\房价数据\\HousePrice.txt')
+data=[];#data目前是list类型，不能直接切片，不是很方便
+for line in islice(file.readlines(),1,None):#该处操作就可以省略第一行了，不读入第一行了
+    item=line.strip().split(',')#这个地方要加line.strip()操作，否则的话，会有换行符也再里面
+    data.append([float(item[0]),float(item[1])])#将字符串类型转换成浮点型，重新组织数据
+data=np.array(data)#所以将data规范化为np.array,因此就可以使用切片了
+x_data=data[:,0]#切片第一维赋给了自变量
+x_data=x_data.reshape(-1,1)#必须是列向量,目前我还不懂是怎么回事，否则会报错
+y_data=data[:,1]#切片第二维赋给因变量
+y_data=y_data.reshape(-1,1)#保证维度一致
+linear_regress=linear_model.LinearRegression();#此处注意LinearRegression()是要带括号的，否则会出现错误
+model=linear_regress.fit(x_data,y_data)#拟合数据，得到最终的模型
+
+#散点图画法
+fig=plt.figure();#这种是一张图里画多个图像，很好用的
+fig1=fig.add_subplot(121)#注意使用规则，一行两列，两个子图
+plt.title('Scattered Picture')#目前不支持汉字，有时间再解决这个吧
+plt.axis([50,800,4000,20000])#规定x轴的显示范围和y轴的显示范围，格式为plt.axis([xmin,xmax,ymin,ymax])
+plt.xlabel('x-data')#标注x轴标签
+plt.ylabel('y-data')#标注y轴标签
+plt.text(500,15000,'Linear-Regression')#在数据的[500,15000]出加上文本标记，不是按像素来的
+plt.scatter(x_data,y_data,color='red')#画散点图
+plt.grid(True)#打开网格线
+
+#函数图像画法
+fig2=fig.add_subplot(122)
+x=np.arange(10,1000);
+y=x*model.coef_[0]+model.intercept_#这个地方注意啊，要维度一致，否则容易出错的，其中coef不是简单的一个数
+#而是一个列表，需要加0，应为这要适用于多元线性回归的情形
+plt.plot(x,y,'--g',label='legend');#添加图例
+plt.legend()#记住让图例显示出来
+
+plt.show()
+# print(model.intercept_)#得到截距
+# print(model.coef_)#得到一次项的系数
+# a=model.coef_[0][0]
+# print(a)
+# y_predict=model.predict(500)#预测x=500时的值
+# print(y_predict)#打印该值
+# R_square=model.score(x_data,y_data)#计算的时本次模型的解释性，用score返回值
+# print(R_square);
+# inter=[ 1771.80851064]
+
+# coef =[[ 28.77659574]]
+'''
+help(linear_model.LinearRegression)
+Help on class LinearRegression in module sklearn.linear_model.base:
+class LinearRegression(LinearModel, sklearn.base.RegressorMixin)
+ |  Ordinary least squares Linear Regression.
+ |  
+ |  Parameters
+ |  ----------
+ |  fit_intercept : boolean, optional   是否计算截距，如果中心化之后，就不用算了，因此此处就可以设置为false
+ |      whether to calculate the intercept for this model. If set
+ |      to false, no intercept will be used in calculations
+ |      (e.g. data is expected to be already centered).
+ |  
+ |  normalize : boolean, optional, default False    是否正则话，这个我目前也不大清楚
+ |      If True, the regressors X will be normalized before regression.
+ |  
+ |  copy_X : boolean, optional, default True    
+ |      If True, X will be copied; else, it may be overwritten.
+ |  
+ |  n_jobs : int, optional, default 1
+ |      The number of jobs to use for the computation.
+ |      If -1 all CPUs are used. This will only provide speedup for
+ |      n_targets > 1 and sufficient large problems.
+ |  
+ |  Attributes
+ |  ----------
+ |  coef_ : array, shape (n_features, ) or (n_targets, n_features)
+ |      Estimated coefficients for the linear regression problem.
+ |      If multiple targets are passed during the fit (y 2D), this
+ |      is a 2D array of shape (n_targets, n_features), while if only
+ |      one target is passed, this is a 1D array of length n_features.
+ |  
+ |  intercept_ : array
+ |      Independent term in the linear model.
+ |  
+ |  Notes
+ |  -----
+ |  From the implementation point of view, this is just plain Ordinary
+ |  Least Squares (scipy.linalg.lstsq) wrapped as a predictor object.
+ |  
+ |  Method resolution order:
+ |      LinearRegression
+ |      LinearModel
+ |      abc.NewBase
+ |      sklearn.base.BaseEstimator
+ |      sklearn.base.RegressorMixin
+ |      builtins.object
+ |  
+ |  Methods defined here:
+ |  
+ |  __init__(self, fit_intercept=True, normalize=False, copy_X=True, n_jobs=1)
+ |      Initialize self.  See help(type(self)) for accurate signature.
+ |  
+ |  fit(self, X, y, sample_weight=None)
+ |      Fit linear model.
+ |      
+ |      Parameters
+ |      ----------
+ |      X : numpy array or sparse matrix of shape [n_samples,n_features]
+ |          Training data
+ |      
+ |      y : numpy array of shape [n_samples, n_targets]
+ |          Target values
+ |      
+ |      sample_weight : numpy array of shape [n_samples]
+ |          Individual weights for each sample
+ |      
+ |          .. versionadded:: 0.17
+ |             parameter *sample_weight* support to LinearRegression.
+ |      
+ |      Returns
+ |      -------
+ |      self : returns an instance of self.
+ |  
+ |  ----------------------------------------------------------------------
+ |  Data descriptors defined here:
+ |  
+ |  residues_
+ |      DEPRECATED: ``residues_`` is deprecated and will be removed in 0.19
+ |      
+ |      Get the residues of the fitted model.
+ |  
+ |  ----------------------------------------------------------------------
+ |  Data and other attributes defined here:
+ |  
+ |  __abstractmethods__ = frozenset()
+ |  
+ |  ----------------------------------------------------------------------
+ |  Methods inherited from LinearModel:
+ |  
+ |  decision_function(*args, **kwargs)
+ |      DEPRECATED:  and will be removed in 0.19.
+ |      
+ |      Decision function of the linear model.
+ |      
+ |              Parameters
+ |              ----------
+ |              X : {array-like, sparse matrix}, shape = (n_samples, n_features)
+ |                  Samples.
+ |      
+ |              Returns
+ |              -------
+ |              C : array, shape = (n_samples,)
+ |                  Returns predicted values.
+ |  
+ |  predict(self, X)
+ |      Predict using the linear model
+ |      
+ |      Parameters
+ |      ----------
+ |      X : {array-like, sparse matrix}, shape = (n_samples, n_features)
+ |          Samples.
+ |      
+ |      Returns
+ |      -------
+ |      C : array, shape = (n_samples,)
+ |          Returns predicted values.
+ |  
+ |  ----------------------------------------------------------------------
+ |  Methods inherited from sklearn.base.BaseEstimator:
+ |  
+ |  __repr__(self)
+ |      Return repr(self).
+ |  
+ |  get_params(self, deep=True)
+ |      Get parameters for this estimator.
+ |      
+ |      Parameters
+ |      ----------
+ |      deep: boolean, optional
+ |          If True, will return the parameters for this estimator and
+ |          contained subobjects that are estimators.
+ |      
+ |      Returns
+ |      -------
+ |      params : mapping of string to any
+ |          Parameter names mapped to their values.
+ |  
+ |  set_params(self, **params)
+ |      Set the parameters of this estimator.
+ |      
+ |      The method works on simple estimators as well as on nested objects
+ |      (such as pipelines). The former have parameters of the form
+ |      ``<component>__<parameter>`` so that it's possible to update each
+ |      component of a nested object.
+ |      
+ |      Returns
+ |      -------
+ |      self
+ |  
+ |  ----------------------------------------------------------------------
+ |  Data descriptors inherited from sklearn.base.BaseEstimator:
+ |  
+ |  __dict__
+ |      dictionary for instance variables (if defined)
+ |  
+ |  __weakref__
+ |      list of weak references to the object (if defined)
+ |  
+ |  ----------------------------------------------------------------------
+ |  Methods inherited from sklearn.base.RegressorMixin:
+ |  
+ |  score(self, X, y, sample_weight=None)
+ |      Returns the coefficient of determination R^2 of the prediction.
+ |      
+ |      The coefficient R^2 is defined as (1 - u/v), where u is the regression
+ |      sum of squares ((y_true - y_pred) ** 2).sum() and v is the residual
+ |      sum of squares ((y_true - y_true.mean()) ** 2).sum().
+ |      Best possible score is 1.0 and it can be negative (because the
+ |      model can be arbitrarily worse). A constant model that always
+ |      predicts the expected value of y, disregarding the input features,
+ |      would get a R^2 score of 0.0.
+ |      
+ |      Parameters
+ |      ----------
+ |      X : array-like, shape = (n_samples, n_features)
+ |          Test samples.
+ |      
+ |      y : array-like, shape = (n_samples) or (n_samples, n_outputs)
+ |          True values for X.
+ |      
+ |      sample_weight : array-like, shape = [n_samples], optional
+ |          Sample weights.
+ |      
+ |      Returns
+ |      -------
+ |      score : float
+ |          R^2 of self.predict(X) wrt. y.
+
+'''
+
+
+
+
+
