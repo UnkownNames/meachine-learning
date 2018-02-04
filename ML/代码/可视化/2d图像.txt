@@ -1,0 +1,20 @@
+#散点图画法
+fig=plt.figure();#这种是一张图里画多个图像，很好用的
+fig1=fig.add_subplot(121)#注意使用规则，一行两列，两个子图
+plt.title('Scattered Picture')#目前不支持汉字，有时间再解决这个吧
+plt.axis([50,800,4000,20000])#规定x轴的显示范围和y轴的显示范围，格式为plt.axis([xmin,xmax,ymin,ymax])
+plt.xlabel('x-data')#标注x轴标签
+plt.ylabel('y-data')#标注y轴标签
+plt.text(500,15000,'Linear-Regression')#在数据的[500,15000]出加上文本标记，不是按像素来的
+plt.scatter(x_data,y_data,color='red')#画散点图
+plt.grid(True)#打开网格线
+
+#函数图像画法
+fig2=fig.add_subplot(122)
+x=np.arange(10,1000);
+y=x*model.coef_[0]+model.intercept_#这个地方注意啊，要维度一致，否则容易出错的，其中coef不是简单的一个数
+#而是一个列表，需要加0，应为这要适用于多元线性回归的情形
+plt.plot(x,y,'--g',label='legend');#添加图例
+plt.legend()#记住让图例显示出来
+
+plt.show()

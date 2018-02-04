@@ -1,0 +1,21 @@
+from sklearn import linear_model
+from itertools import islice#导入切片操作
+import numpy as np
+file=open('C:\\Users\\XiaokangYu\\Desktop\\DataSet\\Datasets\\房价数据\\HousePrice.txt')
+data=[];#data目前是list类型，不能直接切片，不是很方便
+for line in islice(file.readlines(),1,None):#该处操作就可以省略第一行了，不读入第一行了
+    item=line.strip().split(',')#这个地方要加line.strip()操作，否则的话，会有换行符也再里面
+    data.append([float(item[0]),float(item[1])])#将字符串类型转换成浮点型，重新组织数据
+data=np.array(data)#所以将data规范化为np.array,因此就可以使用切片了
+x_data=data[:,0]
+y_data=data[:,1]
+#打印数据看一下效果
+print('data=',end='')#不换行
+print(data)
+print('x_data=',end='')#不换行
+print(x_data)
+print('y_data=',end='')#不换行
+print(y_data)
+file.close()#关闭文件，记得加上
+
+

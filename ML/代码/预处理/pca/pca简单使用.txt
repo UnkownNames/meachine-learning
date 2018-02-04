@@ -1,0 +1,54 @@
+import numpy as np
+#自己实现求协方差矩阵，其实很简单的，只不过就是行列搞不清楚，我大概最怕人家不说清楚
+#现在赶紧记下来
+'''
+    python里求协方差矩阵，也是很简单的，下面说明数据的格式
+    但在matlab中刚好要反过来用
+    每一行代表的一个随机变量的n次观测
+    而每一列代表对一个样本的全部分量的观测
+    即有多少行，该随机向量就有多少个分量
+    cov求样本协方差时除以的是col-1,这样是无偏的
+'''
+def covMatrix(data):  #data时一个numpy类型的一个数组
+    row=data.shape[0];
+    col=data.shape[1];
+    mean=np.mean(data,1);
+    Cov=np.zeros([row,row])
+    for i in range(0,row):
+        for j in range(0,row):
+            x1=data[i,:]-mean[i]
+            x2=data[j,:]-mean[j]
+            Cov[i][j]=np.dot(x1,x2)/(col-1)
+    return Cov
+#example:
+np.set_printoptions(suppress=True)
+X = np.array([[0.1, 0.3, 0.4, 0.8, 0.9],
+                  [3.2, 2.4, 2.4, 0.1, 5.5],
+                  [10., 8.2, 4.3, 2.6, 0.9]
+             ])
+print(covMatrix(X))
+print(np.cov(X))
+#example:有了协方差就可以实现PCA了,此处纠结死了，呜呜呜
+'''
+    X : array-like, shape (n_samples, n_components)
+ |      New data, where n_samples is the number of samples
+ |      and n_components is the number of components.
+    上面是帮助文档里粘贴的，看这个数据格式，行表示数据样本数，与上面的协方差矩阵刚好转置了
+    这里又学到一个了一个技巧，print()打印时很多都是以科学记数法打印的，有时候会很不舒服
+    其实只需要一行语句就可以了，略略略
+    np.set_printoptions(suppress=True) 
+'''
+from sklearn.decomposition import PCA  #使用pca,也是sklearn的库
+import numpy as np;
+pca=PCA(n_components=3)#选取需要显示的主成分数
+pca.fit(X.T)#这个地方要转置一下，
+print(pca.explained_variance_ratio_) #计算主成分方差所占的比重
+
+#下面用Cov矩阵进行验算
+import numpy.linalg as lina
+eigValue_decomposition=lina.eig(covMatrix(X))
+print('eig=',end='')
+print(eigValue_decomposition[0])
+print('explained_variance_ratio=',end="")
+print(eigValue_decomposition[0]/sum(eigValue_decomposition[0]))
+#可以看到其实时一样的，很牛把，略略略

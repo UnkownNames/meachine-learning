@@ -1,0 +1,28 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.linear_model import LogisticRegression #logistic回归，很不错的，准确率达到了93%
+import numpy as np
+df_train=pd.read_csv("C:\\Users\\XiaokangYu\\Desktop\\DataSet\\Datasets\\Breast-Cancer\\breast-cancer-train.csv")
+df_test=pd.read_csv("C:\\Users\\XiaokangYu\\Desktop\\DataSet\\Datasets\\Breast-Cancer\\breast-cancer-test.csv")
+#读入数据
+#确实用pd处理很方便，和R一样方便
+df_test_negative=df_test.loc[df_test['Type']==0][['Clump Thickness','Cell Size']]
+df_test_positive=df_test.loc[df_test['Type']==1][['Clump Thickness','Cell Size']]
+
+lr=LogisticRegression()
+lr.fit(df_train[['Clump Thickness','Cell Size']],df_train['Type'])#目前对这个切片很迷啊，不知道怎么搞
+print(sum(lr.predict(df_test[['Clump Thickness','Cell Size']])==df_test['Type'])) #直接求准确的个数
+print(df_test.shape)#看一下原样本有多少个
+print('Testing accruracy(training sample:',lr.score(df_test[['Clump Thickness','Cell Size']],df_test['Type']));#准确率
+intercept=lr.intercept_#此处仍是简单的一元逻辑斯蒂回归
+coef=lr.coef_[0,:]
+lx=np.arange(0,12)
+ly=(-intercept-lx*coef[0])/coef[1]
+plt.plot(lx,ly,c='blue')#显示出决策面
+plt.scatter(df_test_negative['Clump Thickness'],df_test_negative['Cell Size'],marker='o',s=200,c='red')#良性肿瘤
+#刚好只有两维特征，所以是可以画图的，不要与一维混淆了
+plt.scatter(df_test_positive['Clump Thickness'],df_test_positive['Cell Size'],marker='x',s=150,c='black')#恶性肿瘤
+plt.xlabel('Clump Thickness')
+plt.ylabel('Cell Size')
+plt.show()
+#0.9371428571428572

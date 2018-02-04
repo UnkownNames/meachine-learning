@@ -1,0 +1,66 @@
+#画三维曲面图像
+from matplotlib import pyplot as plt
+import numpy as np
+from mpl_toolkits.mplot3d import Axes3D
+fig=plt.figure()
+ax=Axes3D(fig)
+X=np.arange(-4,4,0.25)
+Y=np.arange(-4,4,0.25)
+X,Y=np.meshgrid(X,Y)
+R=np.sqrt(X**2+Y**2)
+Z=np.sin(R)
+ax.plot_surface(X,Y,Z,rstride=1,cstride=1,cmap='rainbow')
+plt.show()
+
+画三维曲线
+import matplotlib as mpl
+from mpl_toolkits.mplot3d import Axes3D  #画3d图都得导入这个
+import numpy as np
+import matplotlib.pyplot as plt
+
+mpl.rcParams['legend.fontsize'] = 10
+
+fig = plt.figure()
+ax = fig.gca(projection='3d')
+theta = np.linspace(-4 * np.pi, 4 * np.pi, 100)
+z = np.linspace(-2, 2, 100)
+r = z ** 2 + 1
+x = r * np.sin(theta)
+y = r * np.cos(theta)
+ax.plot(x, y, z, label='parametric curve')
+ax.legend()
+plt.show()
+
+
+#画三维散点图
+from mpl_toolkits.mplot3d import Axes3D
+import matplotlib.pyplot as plt
+import numpy as np
+
+
+def randrange(n, vmin, vmax):
+    '''
+    Helper function to make an array of random numbers having shape (n, )
+    with each number distributed Uniform(vmin, vmax).
+    '''
+    return (vmax - vmin) * np.random.rand(n) + vmin
+
+
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+
+n = 100
+
+# For each set of style and range settings, plot n random points in the box
+# defined by x in [23, 32], y in [0, 100], z in [zlow, zhigh].
+for c, m, zlow, zhigh in [('r', 'o', -50, -25), ('b', '^', -30, -5)]:
+    xs = randrange(n, 23, 32)
+    ys = randrange(n, 0, 100)
+    zs = randrange(n, zlow, zhigh)
+    ax.scatter(xs, ys, zs, c=c, marker=m)
+
+ax.set_xlabel('X Label')
+ax.set_ylabel('Y Label')
+ax.set_zlabel('Z Label')
+
+plt.show()
